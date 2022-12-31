@@ -7,12 +7,12 @@
   #Change to your working Directory
   root = "../../ppi-code"
   root2 = "./"
-  # root = "C://Users//Manuel Cardona Arias//Box Sync//IPA_Programs_PPI//07 PPI Development//ppi-code"
-  # root2 = "C://Users//Manuel Cardona Arias//Box Sync//IPA_Programs_PPI//07 PPI Development//Nigeria//2018"
-  pre_p = paste(root,"//01 Pre-Process//", sep="") ##Pre-process functions are stored here
-  fun_l = paste(root,"//02 Function Library//", sep="") ##All other functions used in this code are stored here
-  clean = paste(root2,"//03 Data//02 Clean//", sep="") ##Data that was clean by STATA is kept here
-  results = paste(root2, "//07 Results//", sep="")
+  # root = "C:/Users/Manuel Cardona Arias/Box Sync/IPA_Programs_PPI/07 PPI Development/ppi-code"
+  # root2 = "C:/Users/Manuel Cardona Arias/Box Sync/IPA_Programs_PPI/07 PPI Development/Nigeria/2018"
+  pre_p = paste(root,"/01 Pre-Process/", sep="") ##Pre-process functions are stored here
+  fun_l = paste(root,"/02 Function Library/", sep="") ##All other functions used in this code are stored here
+  clean = paste(root2,"/data/clean/", sep="") ##Data that was clean by STATA is kept here
+  results = paste(root2, "/results/", sep="")
   
   #File names
   survey_data <-"PPI_Nigeria_2018.dta" #Database name
@@ -23,11 +23,7 @@
   target_base <- "poor_npl1" # target_base is the measure of poverty that used to select the questions: usually the National Poverty Line
   
   # target is the poverty classification that we are trying to predict.
-  target <- c("poor_npl1", "poor_150npl1", "poor_200npl1",
-              "poor_2011_100", "poor_2011_190", "poor_2011_320", "poor_2011_550",
-              "poor_2011_800", "poor_2011_1100", "poor_2011_1500", "poor_2011_2170",
-              "poor_2005_125", "poor_2005_250", "poor_2005_500",
-              "poor_bottom_20", "poor_bottom_40", "poor_bottom_60", "poor_bottom_80")
+  target <- c("poor_npl1")
   
   weight_name <- "wt_final" #Column name for household weight
   ID <- "hhid"
@@ -43,9 +39,9 @@
   #Bootstrapping options (shouldn't change them)
   alpha_i <-  0.5 # Ridge regression does not do variable selection (so alpha set to > 0)
   cv_nfold <- 10 #Number of folds used in the cross validation elastic nets
-  bootstrap_size_selection <- 1000 #Number of times we bootstrap to select indicators
+  bootstrap_size_selection <- 100 #Number of times we bootstrap to select indicators
   bootstrap_sample <- 500 #Number of obs the bootstrap draws randomly per iteration
-  bootstrap_error_reps <- 1000 #Number of times we bootstrap to calculate error rates
+  bootstrap_error_reps <- 100 #Number of times we bootstrap to calculate error rates
   bootstrap_sample_size <- c(100,200) #Sample sizes for bootstrapping errors - Targetting error.
   bootstrap_error_sample_size <- seq(from = 100, to = 200, by = 50) #Sample sizes for bootstrapping errors - Poverty rates
   
@@ -228,9 +224,9 @@
     }
     
     targetting_error <- targetting_error[-1,] #Take away NAs from first ob
-    write.csv(targetting_error, file =  paste(results, "//Target_Errors_", nq, "q_", "ALLpovlines.csv",sep=""), col.names = T)
+    write.csv(targetting_error, file =  paste(results, "/Target_Errors_", nq, "q_", "ALLpovlines.csv",sep=""), col.names = T)
     poverty_error <- poverty_error[-1,] #Take away the first NA
-    write.csv(poverty_error, file =  paste(results, "//PovRate_Errors_", nq, "q_", "ALLpovlines.csv",sep="") ,row.names = F , col.names = T)
+    write.csv(poverty_error, file =  paste(results, "/PovRate_Errors_", nq, "q_", "ALLpovlines.csv",sep="") ,row.names = F , col.names = T)
     print("                   Calculated all error rates.")
     
     ################# STEP 9: Select indicators, lambda and alpha again for the WHOLE SAMPLE
@@ -313,8 +309,8 @@
       lookup <- merge(lookup, lookup_table_survey, by = "Score")
       scorecard <- merge(scorecard, scorecard_survey, by= "stable_coef_names")
     }
-    write.csv(scorecard,  file = paste(results, "//", "Scocard_", nq, "q_", "ALLpovlines.csv", sep=""), row.names = T)
-    write.csv(lookup,  file = paste(results, "//", "Lookup_table_", nq, "q_", "ALLpovlines.csv", sep=""), row.names = T)
+    write.csv(scorecard,  file = paste(results, "/", "Scocard_", nq, "q_", "ALLpovlines.csv", sep=""), row.names = T)
+    write.csv(lookup,  file = paste(results, "/", "Lookup_table_", nq, "q_", "ALLpovlines.csv", sep=""), row.names = T)
     end_time <- Sys.time()
     print(paste("     Finished the ", nq, " question model."))
     print(start_time-end_time)    
